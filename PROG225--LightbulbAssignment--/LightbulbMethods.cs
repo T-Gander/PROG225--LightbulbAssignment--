@@ -15,7 +15,7 @@ namespace PROG225__LightbulbAssignment__
 
         internal static List<Bitmap> LoadImages()
         {
-            foreach (string s in Directory.GetFiles("./LightBulbs"))
+            foreach (string s in Directory.GetFiles("../../../LightBulbs"))
             {
                 if (File.Exists(s))
                 {
