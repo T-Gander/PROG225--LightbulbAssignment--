@@ -61,24 +61,52 @@ namespace PROG225__LightbulbAssignment__
             LightBulb.Image = pictureBoxes[0];
         }
 
-        
-        
+        internal static void SetLightbulb(ref PictureBox LightBulb, int state)
+        {
+            List<Bitmap> lightbulbList = Form1.MainForm.LightbulbList;
+            LightBulb.Image = lightbulbList[state];
+        }
+
+        internal static void SetCurrentBrightness(Lightbulb LB)
+        {
+            switch (LB.lightbulbIndex)
+            {
+                case 1:
+                    LB.currentBrightness = 10; break;
+                case 2:
+                    LB.currentBrightness = 30; break;
+                case 3:
+                    LB.currentBrightness = 50; break;
+                case 4:
+                    LB.currentBrightness = 70; break;
+                case 5:
+                    LB.currentBrightness = 90; break;
+                case 6:
+                    LB.currentBrightness = 100; break;
+            }
+        }
     }
 
     internal class Lightbulb
     {
         internal PictureBox pbLightbulb = new PictureBox();
-        internal int currentIndex = 0;
-        private int currentBrightness = 0;
-        internal System.Timers.Timer timer;
+        internal int lightbulbIndex = 0;
+        internal int currentBrightness = 0;
+        internal System.Timers.Timer dimTimer;
+        internal System.Timers.Timer brightenTimer;
 
         internal Lightbulb(int x, int y)
         {
             pbLightbulb = LightbulbMethods.CreateLightbulb(x, y, 0);
             Form1.MainForm.Controls.Add(pbLightbulb);
 
-            timer = new System.Timers.Timer(500);
-            timer.Enabled = false;
+            dimTimer = new System.Timers.Timer(500);
+            dimTimer.Elapsed += DimTimer_Elapsed;
+            dimTimer.Enabled = false;
+
+            brightenTimer = new System.Timers.Timer(500);
+            brightenTimer.Elapsed += BrightenTimer_Elapsed;
+            brightenTimer.Enabled = false;
 
             Button btnDim = new Button
             {
@@ -102,6 +130,17 @@ namespace PROG225__LightbulbAssignment__
             };
             btnBrighten.Click += btnBrighten_Click;
 
+            Button btnSlowDim = new Button
+            {
+                Name = "btnSlowDim",
+                Left = x,
+                Top = y + 140,
+                Height = 23,
+                Width = 50,
+                Text = "--"
+            };
+            btnSlowDim.Click += (sender, e) => dimTimer.Enabled = true;
+
             Button btnSlowBrighten = new Button
             {
                 Name = "btnSlowBrighten",
@@ -111,47 +150,71 @@ namespace PROG225__LightbulbAssignment__
                 Width = 50,
                 Text = "++"
             };
-
-            Button btnSlowDim = new Button
-            {
-                Name = "btnSlowDim",
-                Left = x + 50,
-                Top = y + 140,
-                Height = 23,
-                Width = 50,
-                Text = "--"
-            };
+            btnSlowBrighten.Click += (sender, e) => brightenTimer.Enabled = true;
 
             Form1.MainForm.Controls.Add(btnDim);
             Form1.MainForm.Controls.Add(btnBrighten);
+            Form1.MainForm.Controls.Add(btnSlowDim);
+            Form1.MainForm.Controls.Add(btnSlowBrighten);
+        }
 
-            
+        private void DimTimer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            UpdateLightbulb();
+            if (currentBrightness == 0)
+            {
+                dimTimer.Enabled = false;
+            }
+            else
+            {
+                currentBrightness -= 5;
+                Dim(ref lightbulbIndex);
+            }
+        }
+
+        private void BrightenTimer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            UpdateLightbulb();
+            if (currentBrightness == 100)
+            {
+                brightenTimer.Enabled = false;
+            }
+            else
+            {
+                currentBrightness += 5;
+                Brighten(ref lightbulbIndex);
+            }
+        }
+
+        private void UpdateLightbulb()
+        {
+            LightbulbMethods.SetCurrentBrightness(this);
         }
 
         private void btnDim_Click(object sender, EventArgs e)
         {
-            if (currentIndex != 0)
-            {
-                LightbulbMethods.Dim(pbLightbulb, ref currentIndex);
-            }
+            dimTimer.Enabled = true;
         }
 
         private void btnBrighten_Click(object sender, EventArgs e)
         {
-            if (currentIndex != Form1.MainForm.LightbulbList.Count - 1)
-            {
-                LightbulbMethods.Brighten(pbLightbulb, ref currentIndex);
-            }
+            brightenTimer.Enabled = true;
         }
 
-        private void SlowDim(Lightbulb LB)
+        private void Brighten(ref int currentIndex)
         {
-            LB.timer.Elapsed += (sender, e) => LightbulbMethods.Dim(LB.pbLightbulb, ref LB.currentIndex);
+            currentIndex += 1;
+            pbLightbulb.Invoke(new Action(() => {
+                pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex]; 
+            }));
         }
 
-        private void SlowBrighten(Lightbulb LB)
+        private void Dim(ref int currentIndex)
         {
-            LB.timer.Elapsed += (sender, e) => LightbulbMethods.Brighten(LB.pbLightbulb, ref LB.currentIndex);
+            currentIndex -= 1;
+            pbLightbulb.Invoke(new Action(() => {
+                pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex];
+            }));
         }
     }
 }
