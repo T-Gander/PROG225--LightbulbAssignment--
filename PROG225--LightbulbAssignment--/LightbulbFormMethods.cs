@@ -136,7 +136,7 @@ namespace PROG225__LightbulbAssignment__
                 Width = 50,
                 Text = "-"
             };
-            btnDim.Click += (sender, e) => Dim(ref Brightness);
+            btnDim.Click += (sender, e) => { Dim(ref Brightness); BrightenTimer.Enabled = false; };
 
             Button btnBrighten = new Button
             {
@@ -147,7 +147,7 @@ namespace PROG225__LightbulbAssignment__
                 Width = 50,
                 Text = "+"
             };
-            btnBrighten.Click += (sender, e) => Brighten(ref Brightness); ;
+            btnBrighten.Click += (sender, e) => { Brighten(ref Brightness); DimTimer.Enabled = false; };
 
             Button btnSlowDim = new Button
             {
@@ -158,7 +158,7 @@ namespace PROG225__LightbulbAssignment__
                 Width = 50,
                 Text = "--"
             };
-            btnSlowDim.Click += (sender, e) => { DimTimer.Enabled = true; BrightenTimer.Enabled = false; }; //Creates an anonymous function using lambda (could also put into a seperate event like above)
+            btnSlowDim.Click += (sender, e) => { DimTimer.Enabled = true; BrightenTimer.Enabled = false; }; //Creates an anonymous function using lambda
 
             Button btnSlowBrighten = new Button
             {
