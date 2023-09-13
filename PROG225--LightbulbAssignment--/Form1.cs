@@ -29,8 +29,6 @@ namespace PROG225__LightbulbAssignment__
             if (numberOfLightbulbs < 6)
             {
                 Lightbulb newLightbulb = new Lightbulb(currentX, currentY);
-                //Controls.Add(LightbulbMethods.CreateLightbulb(currentX, currentY, 0));
-
                 currentX += 120;
             }
         }

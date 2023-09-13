@@ -27,7 +27,7 @@ namespace PROG225__LightbulbAssignment__
             return MyLightbulbImages;
         }
 
-        internal static PictureBox CreateLightbulbPictureBox(int x, int y, int imageIndex)
+        internal static PictureBox CreateLightbulbPictureBox(int x, int y, Lightbulb.LightBulbState Brightness)
         {
             PictureBox Lightbulb = new PictureBox 
             { 
@@ -36,7 +36,7 @@ namespace PROG225__LightbulbAssignment__
                 Height = 120,
                 Width = 100,
                 SizeMode = PictureBoxSizeMode.AutoSize, 
-                Image = Form1.MainForm.LightbulbList[imageIndex] 
+                Image = Form1.MainForm.LightbulbList[(int)Brightness] 
             };
 
             return Lightbulb;
@@ -45,7 +45,7 @@ namespace PROG225__LightbulbAssignment__
 
     internal class Lightbulb
     {
-        enum LightBulbState { OFF, VDIM, DIM, HALF, BRIGHT, VBRIGHT, ON }
+        internal enum LightBulbState { OFF, VDIM, DIM, HALF, BRIGHT, VBRIGHT, ON }
 
         private LightBulbState Brightness = LightBulbState.OFF;
 
@@ -60,7 +60,7 @@ namespace PROG225__LightbulbAssignment__
 
         internal Lightbulb(int x, int y)
         {
-            pbLightbulb = LightbulbFormMethods.CreateLightbulbPictureBox(x, y, 0);
+            pbLightbulb = LightbulbFormMethods.CreateLightbulbPictureBox(x, y, LightBulbState.OFF);
             Form1.MainForm.Controls.Add(pbLightbulb);
 
             dimTimer = new System.Timers.Timer(500);
@@ -166,7 +166,7 @@ namespace PROG225__LightbulbAssignment__
             else
             {
                 lumens -= 5;
-                Dim(ref lightbulbIndex);
+                Dim(ref Brightness);
             }
         }
 
@@ -180,7 +180,7 @@ namespace PROG225__LightbulbAssignment__
             else
             {
                 lumens += 5;
-                Brighten(ref lightbulbIndex);
+                Brighten(ref Brightness);
             }
         }
 
@@ -191,39 +191,41 @@ namespace PROG225__LightbulbAssignment__
 
         private void btnDim_Click(object sender, EventArgs e)
         {
-            Dim(ref lightbulbIndex);
+            Dim(ref Brightness);
         }
 
         private void btnBrighten_Click(object sender, EventArgs e)
         {
-            Brighten(ref lightbulbIndex);
+            Brighten(ref Brightness);
         }
 
-        private void Brighten(ref int currentIndex)
+        private void Brighten(ref LightBulbState Brightness)
         {
-            if(currentIndex != Form1.MainForm.LightbulbList.Count - 1)
+            if(Brightness != LightBulbState.ON)
             {
-                currentIndex += 1;
+                Brightness += 1;
+                int brightnessIndex = (int)Brightness;
                 pbLightbulb.Invoke(new Action(() => {
-                    pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex];       //Some help from chatgpt, was running into a cross threaded exception. Fixed by using Invoke. Invoke tells the UI thread to do stuff instead of the current thread.
+                    pbLightbulb.Image = Form1.MainForm.LightbulbList[brightnessIndex];       //Some help from chatgpt, was running into a cross threaded exception. Fixed by using Invoke. Invoke tells the UI thread to do stuff instead of the current thread.
                 }));
             }
         }
 
-        private void Dim(ref int currentIndex)
+        private void Dim(ref LightBulbState Brightness)
         {
-            if(currentIndex != 0)
+            if(Brightness != LightBulbState.OFF)
             {
-                currentIndex -= 1;
+                Brightness -= 1;
+                int brightnessIndex = (int)Brightness;
                 pbLightbulb.Invoke(new Action(() => {
-                    pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex];
+                    pbLightbulb.Image = Form1.MainForm.LightbulbList[brightnessIndex];
                 }));
             }
         }
 
         private void SetLumens()
         {
-            switch (lightbulbIndex)
+            switch ((int)Brightness)
             {
                 case 1:
                     lumens = 10; break;
