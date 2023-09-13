@@ -21,7 +21,7 @@ namespace PROG225__LightbulbAssignment__
             InitializeComponent();
             MainForm = this;
             LightbulbList = LightbulbMethods.LoadImages();
-            LightbulbMethods.DefaultLightbulb(LightbulbList, ref MainLightbulb);
+            LightbulbMethods.OffLightbulb(ref MainLightbulb);
         }
 
         private void btnCreateLightbulb_Click(object sender, EventArgs e)
