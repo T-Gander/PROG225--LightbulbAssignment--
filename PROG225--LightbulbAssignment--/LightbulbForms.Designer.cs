@@ -1,6 +1,6 @@
 ﻿namespace PROG225__LightbulbAssignment__
 {
-    partial class Form1
+    partial class LightbulbForms
     {
         /// <summary>
         ///  Required designer variable.

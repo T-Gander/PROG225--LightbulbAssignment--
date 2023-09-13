@@ -1,8 +1,8 @@
 namespace PROG225__LightbulbAssignment__
 {
-    public partial class Form1 : Form
+    public partial class LightbulbForms : Form
     {
-        public static Form1 MainForm;
+        public static LightbulbForms MainForm;
 
         internal PictureBox MainLightbulb = new PictureBox { Left = 100, Top = 100, SizeMode = PictureBoxSizeMode.AutoSize };
 
@@ -16,7 +16,7 @@ namespace PROG225__LightbulbAssignment__
 
         private int numberOfLightbulbs = 0;
 
-        public Form1()
+        public LightbulbForms()
         {
             InitializeComponent();
             MainForm = this;
@@ -28,7 +28,7 @@ namespace PROG225__LightbulbAssignment__
             numberOfLightbulbs++;
             if (numberOfLightbulbs < 6)
             {
-                Lightbulb newLightbulb = new Lightbulb(currentX, currentY);
+                Lightbulb newLightbulb = new Lightbulb(currentX, currentY);     //Kind of confusing that I can reference this class without it being in the solution explorer but indirectly through LightbulbFormMethods.cs. Should research how this inference works at some point.
                 MyLightbulbs.Add(newLightbulb);
                 currentX += 120;
             }

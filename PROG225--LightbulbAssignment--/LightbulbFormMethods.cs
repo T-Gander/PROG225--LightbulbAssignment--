@@ -36,7 +36,7 @@ namespace PROG225__LightbulbAssignment__
                 Height = 120,
                 Width = 100,
                 SizeMode = PictureBoxSizeMode.AutoSize, 
-                Image = Form1.MainForm.LightbulbBitmapList[(int)Brightness] 
+                Image = LightbulbForms.MainForm.LightbulbBitmapList[(int)Brightness] 
             };
 
             return Lightbulb;
@@ -64,7 +64,7 @@ namespace PROG225__LightbulbAssignment__
         internal Lightbulb(int x, int y)
         {
             pbLightbulb = LightbulbFormMethods.CreateLightbulbPictureBox(x, y, LightBulbState.OFF);
-            Form1.MainForm.Controls.Add(pbLightbulb);
+            LightbulbForms.MainForm.Controls.Add(pbLightbulb);
 
             DimTimer = new System.Timers.Timer(100);
             DimTimer.Elapsed += DimTimer_Elapsed;
@@ -171,15 +171,15 @@ namespace PROG225__LightbulbAssignment__
             };
             btnSlowBrighten.Click += (sender, e) => { DimTimer.Enabled = false; BrightenTimer.Enabled = true; };
 
-            Form1.MainForm.Controls.Add(txtName);
-            Form1.MainForm.Controls.Add(lblName);
-            Form1.MainForm.Controls.Add(btnAddName);
-            Form1.MainForm.Controls.Add(lblLightbulbState);
-            Form1.MainForm.Controls.Add(lblLumensValue);
-            Form1.MainForm.Controls.Add(btnDim);
-            Form1.MainForm.Controls.Add(btnBrighten);
-            Form1.MainForm.Controls.Add(btnSlowDim);
-            Form1.MainForm.Controls.Add(btnSlowBrighten);
+            LightbulbForms.MainForm.Controls.Add(txtName);
+            LightbulbForms.MainForm.Controls.Add(lblName);
+            LightbulbForms.MainForm.Controls.Add(btnAddName);
+            LightbulbForms.MainForm.Controls.Add(lblLightbulbState);
+            LightbulbForms.MainForm.Controls.Add(lblLumensValue);
+            LightbulbForms.MainForm.Controls.Add(btnDim);
+            LightbulbForms.MainForm.Controls.Add(btnBrighten);
+            LightbulbForms.MainForm.Controls.Add(btnSlowDim);
+            LightbulbForms.MainForm.Controls.Add(btnSlowBrighten);
             
         }
         private string UpdateLightbulbStateText()
@@ -235,7 +235,7 @@ namespace PROG225__LightbulbAssignment__
         {
             int brightnessIndex = (int)Brightness;
             pbLightbulb.Invoke(new Action(() => {
-                pbLightbulb.Image = Form1.MainForm.LightbulbBitmapList[brightnessIndex];       //Some help from chatgpt, was running into a cross threaded exception. Fixed by using Invoke. Invoke tells the UI thread to do stuff instead of the current thread.
+                pbLightbulb.Image = LightbulbForms.MainForm.LightbulbBitmapList[brightnessIndex];       //Some help from chatgpt, was running into a cross threaded exception. Fixed by using Invoke. Invoke tells the UI thread to do stuff instead of the current thread.
                 lblLightbulbState.Text = UpdateLightbulbStateText();
                 lblLumensValue.Text = Lumens.ToString();
             }));
