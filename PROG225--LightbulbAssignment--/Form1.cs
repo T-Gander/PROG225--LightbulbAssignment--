@@ -6,9 +6,9 @@ namespace PROG225__LightbulbAssignment__
 
         internal PictureBox MainLightbulb = new PictureBox { Left = 100, Top = 100, SizeMode = PictureBoxSizeMode.AutoSize };
 
-        internal List<Bitmap> LightbulbList;
+        internal List<Bitmap> LightbulbBitmapList;
 
-        internal int LightbulbIndex = 0;
+        private List<Lightbulb> MyLightbulbs = new List<Lightbulb>();
 
         private int currentX = 100;
 
@@ -20,7 +20,7 @@ namespace PROG225__LightbulbAssignment__
         {
             InitializeComponent();
             MainForm = this;
-            LightbulbList = LightbulbFormMethods.LoadImages();
+            LightbulbBitmapList = LightbulbFormMethods.LoadImages();
         }
 
         private void btnCreateLightbulb_Click(object sender, EventArgs e)
@@ -29,8 +29,21 @@ namespace PROG225__LightbulbAssignment__
             if (numberOfLightbulbs < 6)
             {
                 Lightbulb newLightbulb = new Lightbulb(currentX, currentY);
+                MyLightbulbs.Add(newLightbulb);
                 currentX += 120;
             }
+        }
+
+        private void btnAllOn_Click(object sender, EventArgs e)
+        {
+            MyLightbulbs.ForEach(Lightbulb => Lightbulb.DimTimer.Enabled = false);
+            MyLightbulbs.ForEach(Lightbulb => Lightbulb.BrightenTimer.Enabled = true);
+        }
+
+        private void btnAllOff_Click(object sender, EventArgs e)
+        {
+            MyLightbulbs.ForEach(Lightbulb => Lightbulb.BrightenTimer.Enabled = false);
+            MyLightbulbs.ForEach(Lightbulb => Lightbulb.DimTimer.Enabled = true);
         }
     }
 }
