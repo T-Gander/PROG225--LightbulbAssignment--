@@ -48,9 +48,9 @@ namespace PROG225__LightbulbAssignment__
         internal enum LightBulbState { OFF, VDIM, DIM, HALF, BRIGHT, VBRIGHT, ON }
 
         private LightBulbState Brightness = LightBulbState.OFF;
-
+        private Label lblLightbulbState;
         private PictureBox pbLightbulb = new PictureBox();
-        private int lightbulbIndex = 0;
+        
         private int lumens = 0;
         public string Name { get { return _name; } set { _name = value; } }
         private string _name = "";
@@ -111,6 +111,7 @@ namespace PROG225__LightbulbAssignment__
                 Width = 100,
                 Text = Brightness.ToString()
             };
+            this.lblLightbulbState = lblLightbulbState;
 
             Button btnDim = new Button
             {
@@ -121,7 +122,7 @@ namespace PROG225__LightbulbAssignment__
                 Width = 50,
                 Text = "-"
             };
-            btnDim.Click += btnDim_Click;
+            btnDim.Click += (sender, e) => Dim(ref Brightness);
 
             Button btnBrighten = new Button
             {
@@ -132,7 +133,7 @@ namespace PROG225__LightbulbAssignment__
                 Width = 50,
                 Text = "+"
             };
-            btnBrighten.Click += btnBrighten_Click;
+            btnBrighten.Click += (sender, e) => Brighten(ref Brightness); ;
 
             Button btnSlowDim = new Button
             {
@@ -181,23 +182,41 @@ namespace PROG225__LightbulbAssignment__
             }
         }
 
+        private string UpdateLightbulbStateText()
+        {
+            string result = "OFF";
+            switch(Brightness)
+            {
+                case LightBulbState.VDIM:
+                    return "VDIM";
+                case LightBulbState.DIM:
+                    return "DIM";
+                case LightBulbState.HALF:
+                    return "HALF";
+                case LightBulbState.BRIGHT:
+                    return "BRIGHT";
+                case LightBulbState.VBRIGHT:
+                    return "VBRIGHT";
+                case LightBulbState.ON:
+                    return "ON";
+            }
+            return result;
+        }
+
         private void BrightenTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             SetLumens();
             if (lumens == 100)
             {
+                lblLightbulbState.Text = UpdateLightbulbStateText();
                 brightenTimer.Enabled = false;
             }
             else
             {
                 lumens += 5;
                 Brighten(ref Brightness);
+                lblLightbulbState.Text = UpdateLightbulbStateText();
             }
-        }
-
-        private void UpdateLightbulbBrightness()
-        {
-            SetLumens();
         }
 
         private void btnDim_Click(object sender, EventArgs e)
@@ -218,7 +237,9 @@ namespace PROG225__LightbulbAssignment__
                 int brightnessIndex = (int)Brightness;
                 pbLightbulb.Invoke(new Action(() => {
                     pbLightbulb.Image = Form1.MainForm.LightbulbList[brightnessIndex];       //Some help from chatgpt, was running into a cross threaded exception. Fixed by using Invoke. Invoke tells the UI thread to do stuff instead of the current thread.
+                    lblLightbulbState.Text = UpdateLightbulbStateText();
                 }));
+                
             }
         }
 
@@ -230,7 +251,9 @@ namespace PROG225__LightbulbAssignment__
                 int brightnessIndex = (int)Brightness;
                 pbLightbulb.Invoke(new Action(() => {
                     pbLightbulb.Image = Form1.MainForm.LightbulbList[brightnessIndex];
+                    lblLightbulbState.Text = UpdateLightbulbStateText();
                 }));
+                
             }
         }
 
