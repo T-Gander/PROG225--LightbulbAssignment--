@@ -7,10 +7,8 @@ using System.Timers;
 
 namespace PROG225__LightbulbAssignment__
 {
-    internal class LightbulbMethods
+    internal class LightbulbFormMethods
     {
-        public int Lumens;
-
         public static List<Bitmap> MyLightbulbImages = new List<Bitmap>();  
 
         internal static List<Bitmap> LoadImages()
@@ -43,83 +41,26 @@ namespace PROG225__LightbulbAssignment__
 
             return Lightbulb;
         }
-
-        internal static void Brighten(PictureBox LightBulb, ref int currentIndex)
-        {
-            currentIndex += 1;
-            LightBulb.Image = Form1.MainForm.LightbulbList[currentIndex];
-        }
-
-        internal static void Dim(PictureBox LightBulb, ref int currentIndex)
-        {
-            currentIndex -= 1;
-            LightBulb.Image = Form1.MainForm.LightbulbList[currentIndex];
-        }
-
-        internal static void OffLightbulb(ref PictureBox LightBulb)
-        {
-            List<Bitmap> lightbulbList = Form1.MainForm.LightbulbList;
-            LightBulb.Image = lightbulbList[0];
-        }
-
-        internal static void SetLightbulb(ref PictureBox LightBulb, int index)
-        {
-            List<Bitmap> lightbulbList = Form1.MainForm.LightbulbList;
-            LightBulb.Image = lightbulbList[index];
-        }
-
-        internal static void SetCurrentBrightness(Lightbulb LB)
-        {
-            switch (LB.lightbulbIndex)
-            {
-                case 1:
-                    LB.currentBrightness = 10; break;
-                case 2:
-                    LB.currentBrightness = 30; break;
-                case 3:
-                    LB.currentBrightness = 50; break;
-                case 4:
-                    LB.currentBrightness = 70; break;
-                case 5:
-                    LB.currentBrightness = 90; break;
-                case 6:
-                    LB.currentBrightness = 100; break;
-            }
-        }
-
-        internal static void SetLightbulbIndex(Lightbulb LB)
-        {
-            switch (LB.currentBrightness)
-            {
-                case 0:
-                    LB.lightbulbIndex = 0; break;
-                case <10:
-                    LB.lightbulbIndex = 1; break;
-                case <30:
-                    LB.lightbulbIndex = 2; break;
-                case <50:
-                    LB.lightbulbIndex = 3; break;
-                case <70:
-                    LB.lightbulbIndex = 4; break;
-                case <90:
-                    LB.lightbulbIndex = 5; break;
-                case <100:
-                    LB.lightbulbIndex = 6; break;
-            }
-        }
     }
 
     internal class Lightbulb
     {
-        internal PictureBox pbLightbulb = new PictureBox();
-        internal int lightbulbIndex = 0;
-        internal int currentBrightness = 0;
-        internal System.Timers.Timer dimTimer;
-        internal System.Timers.Timer brightenTimer;
+        enum LightBulbState { OFF, VDIM, DIM, HALF, BRIGHT, VBRIGHT, ON }
+
+        private LightBulbState Brightness = LightBulbState.OFF;
+
+        private PictureBox pbLightbulb = new PictureBox();
+        private int lightbulbIndex = 0;
+        private int lumens = 0;
+        public string Name { get { return _name; } set { _name = value; } }
+        private string _name = "";
+
+        private System.Timers.Timer dimTimer;
+        private System.Timers.Timer brightenTimer;
 
         internal Lightbulb(int x, int y)
         {
-            pbLightbulb = LightbulbMethods.CreateLightbulbPictureBox(x, y, 0);
+            pbLightbulb = LightbulbFormMethods.CreateLightbulbPictureBox(x, y, 0);
             Form1.MainForm.Controls.Add(pbLightbulb);
 
             dimTimer = new System.Timers.Timer(500);
@@ -130,11 +71,42 @@ namespace PROG225__LightbulbAssignment__
             brightenTimer.Elapsed += BrightenTimer_Elapsed;
             brightenTimer.Enabled = false;
 
+            TextBox txtName = new TextBox
+            {
+                Name = "txtName",
+                Left = x,
+                Top = y - 60,
+                Height = 23,
+                Width = 60,
+                Text = Name
+            };
+
+            Label lblName = new Label
+            {
+                Name = "lblName",
+                Left = x,
+                Top = y - 30,
+                Height = 23,
+                Width = 100,
+                Text = ""
+            };
+
+            Button btnAddName = new Button
+            {
+                Name = "btnAddName",
+                Left = x + 65,
+                Top = y - 60,
+                Height = 23,
+                Width = 40,
+                Text = "Set Name"
+            };
+            btnAddName.Click += (sender, e) => { lblName.Text = txtName.Text; txtName.Text = ""; };
+
             Button btnDim = new Button
             {
                 Name = "btnDim",
                 Left = x,
-                Top = y + 120,
+                Top = y + 140,
                 Height = 23,
                 Width = 50,
                 Text = "-"
@@ -145,7 +117,7 @@ namespace PROG225__LightbulbAssignment__
             {
                 Name = "btnBrighten",
                 Left = x + 50,
-                Top = y + 120,
+                Top = y + 140,
                 Height = 23,
                 Width = 50,
                 Text = "+"
@@ -156,41 +128,44 @@ namespace PROG225__LightbulbAssignment__
             {
                 Name = "btnSlowDim",
                 Left = x,
-                Top = y + 140,
+                Top = y + 170,
                 Height = 23,
                 Width = 50,
                 Text = "--"
             };
-            btnSlowDim.Click += (sender, e) => { dimTimer.Enabled = true; brightenTimer.Enabled = false; };
+            btnSlowDim.Click += (sender, e) => { dimTimer.Enabled = true; brightenTimer.Enabled = false; }; //Creates an anonymous function using lambda (could also put into a seperate event like above)
 
             Button btnSlowBrighten = new Button
             {
                 Name = "btnSlowBrighten",
                 Left = x + 50,
-                Top = y + 140,
+                Top = y + 170,
                 Height = 23,
                 Width = 50,
                 Text = "++"
             };
             btnSlowBrighten.Click += (sender, e) => { dimTimer.Enabled = false; brightenTimer.Enabled = true; };
 
+            Form1.MainForm.Controls.Add(txtName);
+            Form1.MainForm.Controls.Add(lblName);
+            Form1.MainForm.Controls.Add(btnAddName);
             Form1.MainForm.Controls.Add(btnDim);
             Form1.MainForm.Controls.Add(btnBrighten);
             Form1.MainForm.Controls.Add(btnSlowDim);
             Form1.MainForm.Controls.Add(btnSlowBrighten);
+            
         }
 
         private void DimTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             UpdateLightbulbBrightness();
-            if (currentBrightness == 0)
+            if (lumens == 0)
             {
-                //LightbulbMethods.OffLightbulb(ref pbLightbulb);
                 dimTimer.Enabled = false;
             }
             else
             {
-                currentBrightness -= 5;
+                lumens -= 5;
                 Dim(ref lightbulbIndex);
             }
         }
@@ -198,20 +173,20 @@ namespace PROG225__LightbulbAssignment__
         private void BrightenTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             UpdateLightbulbBrightness();
-            if (currentBrightness == 100)
+            if (lumens == 100)
             {
                 brightenTimer.Enabled = false;
             }
             else
             {
-                currentBrightness += 5;
+                lumens += 5;
                 Brighten(ref lightbulbIndex);
             }
         }
 
         private void UpdateLightbulbBrightness()
         {
-            LightbulbMethods.SetCurrentBrightness(this);
+            SetLumens();
         }
 
         private void btnDim_Click(object sender, EventArgs e)
@@ -230,7 +205,7 @@ namespace PROG225__LightbulbAssignment__
             {
                 currentIndex += 1;
                 pbLightbulb.Invoke(new Action(() => {
-                    pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex];       //Some help from chatgpt, was running into a cross threaded exception. Invoke tells the UI thread to do stuff instead of the current thread.
+                    pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex];       //Some help from chatgpt, was running into a cross threaded exception. Fixed by using Invoke. Invoke tells the UI thread to do stuff instead of the current thread.
                 }));
             }
         }
@@ -243,6 +218,25 @@ namespace PROG225__LightbulbAssignment__
                 pbLightbulb.Invoke(new Action(() => {
                     pbLightbulb.Image = Form1.MainForm.LightbulbList[lightbulbIndex];
                 }));
+            }
+        }
+
+        private void SetLumens()
+        {
+            switch (lightbulbIndex)
+            {
+                case 1:
+                    lumens = 10; break;
+                case 2:
+                    lumens = 30; break;
+                case 3:
+                    lumens = 50; break;
+                case 4:
+                    lumens = 70; break;
+                case 5:
+                    lumens = 90; break;
+                case 6:
+                    lumens = 100; break;
             }
         }
     }
