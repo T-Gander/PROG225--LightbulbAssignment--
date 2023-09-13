@@ -102,6 +102,16 @@ namespace PROG225__LightbulbAssignment__
             };
             btnAddName.Click += (sender, e) => { lblName.Text = txtName.Text; txtName.Text = ""; };
 
+            Label lblLightbulbState = new Label
+            {
+                Name = "lblLightbulbState",
+                Left = x,
+                Top = y + 115,
+                Height = 23,
+                Width = 100,
+                Text = Brightness.ToString()
+            };
+
             Button btnDim = new Button
             {
                 Name = "btnDim",
@@ -149,6 +159,7 @@ namespace PROG225__LightbulbAssignment__
             Form1.MainForm.Controls.Add(txtName);
             Form1.MainForm.Controls.Add(lblName);
             Form1.MainForm.Controls.Add(btnAddName);
+            Form1.MainForm.Controls.Add(lblLightbulbState);
             Form1.MainForm.Controls.Add(btnDim);
             Form1.MainForm.Controls.Add(btnBrighten);
             Form1.MainForm.Controls.Add(btnSlowDim);
@@ -158,7 +169,7 @@ namespace PROG225__LightbulbAssignment__
 
         private void DimTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            UpdateLightbulbBrightness();
+            SetLumens();
             if (lumens == 0)
             {
                 dimTimer.Enabled = false;
@@ -172,7 +183,7 @@ namespace PROG225__LightbulbAssignment__
 
         private void BrightenTimer_Elapsed(object? sender, ElapsedEventArgs e)
         {
-            UpdateLightbulbBrightness();
+            SetLumens();
             if (lumens == 100)
             {
                 brightenTimer.Enabled = false;
@@ -227,18 +238,20 @@ namespace PROG225__LightbulbAssignment__
         {
             switch ((int)Brightness)
             {
+                case 0:
+                    lumens = 0; Brightness = LightBulbState.OFF; break;
                 case 1:
-                    lumens = 10; break;
+                    lumens = 10; Brightness = LightBulbState.VDIM;  break;
                 case 2:
-                    lumens = 30; break;
+                    lumens = 30; Brightness = LightBulbState.DIM; break;
                 case 3:
-                    lumens = 50; break;
+                    lumens = 50; Brightness = LightBulbState.HALF; break;
                 case 4:
-                    lumens = 70; break;
+                    lumens = 70; Brightness = LightBulbState.BRIGHT; break;
                 case 5:
-                    lumens = 90; break;
+                    lumens = 90; Brightness = LightBulbState.VBRIGHT; break;
                 case 6:
-                    lumens = 100; break;
+                    lumens = 100; Brightness = LightBulbState.ON; break;
             }
         }
     }
