@@ -53,8 +53,7 @@ namespace PROG225__LightbulbAssignment__
         private PictureBox pbLightbulb = new PictureBox();
 
         public int Lumens { get { return _lumens; } set { _lumens = value; }}
-
-        private int _lumens = 0;
+        private int _lumens = 0;    //Is this needed or should I just use the get; set; shortcut? (needs researching)
 
         public string Name { get { return _name; } set { _name = value; } }
         private string _name = "";
